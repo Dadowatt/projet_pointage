@@ -1,53 +1,33 @@
 <?php
-
 require "connexion.php";
-include "navbar.php";
-session_start();
 
-// Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Récupération et nettoyage des données
-    $nom = htmlspecialchars(trim($_POST['nom']));
-    $prenom = htmlspecialchars(trim($_POST['prenom']));
-    $adresse = htmlspecialchars(trim($_POST['adresse']));
-    $email = htmlspecialchars(trim($_POST['email']));
-    $telephone = htmlspecialchars(trim($_POST['telephone']));
-    $poste = htmlspecialchars(trim($_POST['poste']));
-    $mot_de_passe = trim($_POST['mot_de_passe']);
+    $nom = $_POST['nom'];
+    $prenom = $_POST['prenom'];
+    $email = $_POST['email'];
+    $telephone = $_POST['telephone'];
+    $mot_de_passe = password_hash($_POST['mot_de_passe'], PASSWORD_BCRYPT);
 
-    // Liste des champs requis
-    $champs_requis = ['nom', 'prenom', 'adresse', 'email', 'telephone', 'poste', 'mot_de_passe'];
+    $sql = "SELECT * FROM employer WHERE email = :email";
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    foreach ($champs_requis as $champ) {
-        if (empty($_POST[$champ])) {
-            $erreur = "Tous les champs requis doivent être remplis !";
-            break;
-        }
-    }
-
-    // Validation spécifique de l'email
-    if (empty($erreur) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $erreur = "Adresse email invalide !";
-    }
-
-    // Si aucune erreur, on procède à l'insertion
-    if (empty($erreur)) {
-        try {
-            // Hachage du mot de passe
-            $mot_de_passe_hash = password_hash($mot_de_passe, PASSWORD_DEFAULT);
-
-            // Préparer l'insertion
-            $requete = $connexion->prepare("INSERT INTO employer (nom, prenom, adresse, email, telephone, poste, mot_de_passe) VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-            // Exécuter la requête
-            if ($requete->execute([$nom, $prenom, $adresse, $email, $telephone, $poste, $mot_de_passe_hash])) {
-                $_SESSION['message'] = "Inscription réussie ! Connectez-vous.";
-                header("Location: login.php");
-                exit();
-            }
-        } catch (PDOException $e) {
-            $erreur = "Erreur lors de l'inscription : " . $e->getMessage();
-        }
+    if ($user) {
+        $error = "Cet email est déjà utilisé.";
+    } else {
+        $sql = "INSERT INTO employer (nom, prenom, email, telephone, mot_de_passe) VALUES (:nom, :prenom, :email, :telephone, :mot_de_passe)";
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute([
+            ':nom' => $nom,
+            ':prenom' => $prenom,
+            ':email' => $email,
+            ':telephone' => $telephone,
+            ':mot_de_passe' => $mot_de_passe
+        ]);
+        header("Location: login.php?inscription=success");
+        exit();
     }
 }
 ?>
@@ -61,71 +41,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container border mt-5 bg-body-tertiary">
-        <h2 class="text-center mt-3">Inscription</h2>
+    <div class="container mt-5">
+        <h2>Inscription</h2>
 
-        <?php if (!empty($erreur)): ?>
-            <div class="alert alert-danger"> <?= $erreur ?> </div>
+        <?php if (isset($_GET['inscription']) && $_GET['inscription'] == 'success'): ?>
+            <div class="alert alert-success" role="alert">
+                Inscription réussie ! Vous pouvez maintenant vous connecter.
+            </div>
         <?php endif; ?>
 
-        <form action="" method="POST" class="row g-3 needs-validation mt-3" novalidate>
-            <div class="col-md-4">
+        <?php if (isset($error)): ?>
+            <div class="alert alert-danger" role="alert">
+                <?= $error; ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST">
+            <div class="mb-3">
                 <label for="nom" class="form-label">Nom</label>
-                <input type="text" class="form-control" id="nom" name="nom" required>
+                <input type="text" name="nom" id="nom" class="form-control" required>
             </div>
-            <div class="col-md-4">
+
+            <div class="mb-3">
                 <label for="prenom" class="form-label">Prénom</label>
-                <input type="text" class="form-control" id="prenom" name="prenom" required>
+                <input type="text" name="prenom" id="prenom" class="form-control" required>
             </div>
-            <div class="col-md-4">
-                <label for="adresse" class="form-label">Adresse</label>
-                <input type="text" class="form-control" id="adresse" name="adresse" required>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" id="email" class="form-control" required>
             </div>
-            <div class="col-md-4">
-                <label for="email" class="form-label">E-mail</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="col-md-4">
+
+            <div class="mb-3">
                 <label for="telephone" class="form-label">Téléphone</label>
-                <input type="text" class="form-control" id="telephone" name="telephone" required>
+                <input type="tel" name="telephone" id="telephone" class="form-control" required>
             </div>
-            <div class="col-md-4">
-                <label for="poste" class="form-label">Poste</label>
-                <input type="text" class="form-control" id="poste" name="poste" required>
-            </div>
-            <div class="col-md-6">
+
+            <div class="mb-3">
                 <label for="mot_de_passe" class="form-label">Mot de passe</label>
-                <input type="password" class="form-control" id="mot_de_passe" name="mot_de_passe" required>
+                <input type="password" name="mot_de_passe" id="mot_de_passe" class="form-control" required>
             </div>
 
-            <div class="col-12">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
-                    <label class="form-check-label" for="invalidCheck">J'accepte les termes et conditions</label>
-                </div>
-            </div>
-
-            <div class="col-12">
-                <button class="btn btn-primary" type="submit">S'inscrire</button>
-            </div>
+            <button type="submit" class="btn btn-primary">S'inscrire</button>
+            <a href="login.php" class="btn btn-secondary">Retour à la connexion</a>
         </form>
     </div>
 
-    <script>
-        (() => {
-            'use strict';
-            const forms = document.querySelectorAll('.needs-validation');
-
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        })();
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

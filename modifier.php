@@ -1,17 +1,32 @@
 <?php
 require "connexion.php";
+include "navbar.php";
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $sql = "SELECT * FROM pointages WHERE id = :id";
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $pointage = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$pointage) {
+        die("Pointage non trouvé.");
+    }
+} else {
+    die("ID du pointage manquant.");
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $libelle = isset($_POST['libelle']) ? implode(',', $_POST['libelle']) : '';
-    $date = date('Y-m-d');
     $nbr_presence = intval($_POST['nbr_presence']);
 
-    $sql = "INSERT INTO pointages (libellé, date, nbr_présence) VALUES (:libelle, :date, :nbr_presence)";
+    $sql = "UPDATE pointages SET libellé = :libelle, nbr_présence = :nbr_presence WHERE id = :id";
     $stmt = $connexion->prepare($sql);
     $stmt->execute([
         ':libelle' => $libelle,
-        ':date' => $date,
-        ':nbr_presence' => $nbr_presence
+        ':nbr_presence' => $nbr_presence,
+        ':id' => $id
     ]);
     header("Location: index.php");
     exit();
@@ -22,27 +37,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Ajouter un Pointage</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Modifier un Pointage</title>
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Ajouter un Pointage</h2>
+        <h2>Modifier un Pointage</h2>
 
         <form method="POST">
             <div class="mb-3">
                 <label><strong>Actions :</strong></label><br>
-                <input type="checkbox" name="libelle[]" value="Arrivée"> Arrivée
-                <input type="checkbox" name="libelle[]" value="Départ"> Départ
-                <input type="checkbox" name="libelle[]" value="Pause"> Pause
+                <input type="checkbox" name="libelle[]" value="Arrivée" <?= in_array('Arrivée', explode(',', $pointage['libellé'])) ? 'checked' : ''; ?>> Arrivée
+                <input type="checkbox" name="libelle[]" value="Départ" <?= in_array('Départ', explode(',', $pointage['libellé'])) ? 'checked' : ''; ?>> Départ
+                <input type="checkbox" name="libelle[]" value="Pause" <?= in_array('Pause', explode(',', $pointage['libellé'])) ? 'checked' : ''; ?>> Pause
             </div>
 
             <div class="mb-3">
                 <label for="nbr_presence" class="form-label">Nombre de Présences :</label>
-                <input type="number" name="nbr_presence" id="nbr_presence" class="form-control" required>
+                <input type="number" name="nbr_presence" id="nbr_presence" class="form-control" value="<?= htmlspecialchars($pointage['nbr_présence']); ?>" required>
             </div>
 
-            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="submit" class="btn btn-primary">Mettre à jour</button>
             <a href="index.php" class="btn btn-secondary">Retour</a>
         </form>
     </div>

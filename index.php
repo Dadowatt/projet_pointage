@@ -1,7 +1,6 @@
 <?php
 require "connexion.php";
 
-// Récupérer les pointages de l'employé connecté
 $sql = "SELECT * FROM pointages";
 $query = $connexion->query($sql);
 $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -9,7 +8,6 @@ $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,7 +62,6 @@ $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
 
-    <!-- Navbar (Header) -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#"><i class="bi bi-clock-fill me-1"></i> Pointage</a>
@@ -77,7 +74,7 @@ $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
                     <li class="nav-item"><a class="nav-link" href="#">Profil</a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Déconnexion</a>
-                </li>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -85,7 +82,6 @@ $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="main-container">
 
-        <!-- Sidebar -->
         <div class="sidebar">
             <h4 class="text-center">Menu</h4>
             <a href="#">🏠 Dashboard</a>
@@ -94,40 +90,24 @@ $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
             <a href="logout.php" class="mt-auto">🚪 Déconnexion</a>
         </div>
 
-        <!-- Contenu principal -->
         <div class="container c-middle mt-5">
-        <h2 class="mb-4">Mes Pointages</h2>
-        <a href="ajouter.php" class="btn btn-success mb-3">➕ Ajouter un Pointage</a>
+            <h2 class="mb-4">Mes Pointages</h2>
+            <a href="ajouter.php" class="btn btn-success mb-3">➕ Ajouter un Pointage</a>
 
-        <?php foreach ($pointages as $pointage): ?>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Pointage du <?= htmlspecialchars($pointage['date']); ?></h5>
-                    <p class="card-text"><strong>Libellé : </strong><?= htmlspecialchars($pointage['libellé']); ?></p>
-                    <p class="card-text"><strong>Présences : </strong><?= htmlspecialchars($pointage['nbr_présence']); ?></p>
+            <?php foreach ($pointages as $pointage): ?>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Pointage du <?= htmlspecialchars($pointage['date']); ?></h5>
+                        <p class="card-text"><strong>Libellé : </strong><?= htmlspecialchars($pointage['libellé']); ?></p>
+                        <p class="card-text"><strong>Présences : </strong><?= htmlspecialchars($pointage['nbr_présence']); ?></p>
 
-                    <!-- Bouton Voir plus -->
-                    <button class="btn btn-info" onclick="afficherDetails(<?= $pointage['id']; ?>)">Voir plus</button>
-
-                    <!-- Zone des détails (cachée par défaut) -->
-                    <div id="details-<?= $pointage['id']; ?>" style="display:none;">
-                        <p><strong>ID du Pointage :</strong> <?= $pointage['id']; ?></p>
-                        <p><strong>Date :</strong> <?= htmlspecialchars($pointage['date']); ?></p>
+                        <a href="voir_plus.php?id=<?= $pointage['id']; ?>" class="btn btn-info">Voir plus</a>
+                        <a href="modifier.php?id=<?= $pointage['id']; ?>" class="btn btn-warning">Modifier</a>
+                        <a href="supprimer.php?id=<?= $pointage['id']; ?>" class="btn btn-danger" onclick="return confirm('Confirmer la suppression ?');">Supprimer</a>
                     </div>
-
-                    <a href="modifier.php?id=<?= $pointage['id']; ?>" class="btn btn-warning">Modifier</a>
-                    <a href="supprimer.php?id=<?= $pointage['id']; ?>" class="btn btn-danger" onclick="return confirm('Confirmer la suppression ?');">Supprimer</a>
                 </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-
-    <script>
-        function afficherDetails(id) {
-            const details = document.getElementById('details-' + id);
-            details.style.display = (details.style.display === 'none') ? 'block' : 'none';
-        }
-    </script>
+            <?php endforeach; ?>
+        </div>
 
     </div>
 
