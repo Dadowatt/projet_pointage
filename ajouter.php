@@ -13,7 +13,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($nbr_presence <= 0) {
             $error = "Le nombre de présences doit être un nombre positif.";
         } else {
-
             $sql = "INSERT INTO pointages (libellé, date, nbr_présence) VALUES (:libelle, :date, :nbr_presence)";
             $stmt = $connexion->prepare($sql);
             $stmt->execute([
@@ -36,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Ajouter un Pointage</h2>
 
         <?php if (isset($error)): ?>
             <div class="alert alert-danger">
@@ -44,12 +42,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         <?php endif; ?>
 
-        <form method="POST">
+        <form method="POST" class="form-control mx-auto py-4 bg-body-tertiary" style="width: 450px;">
+        <h2 class="text-center">Ajouter un Pointage</h2>
             <div class="mb-3">
-                <label><strong>Actions :</strong></label><br>
-                <input type="checkbox" name="libelle[]" value="Arrivée"> Arrivée
-                <input type="checkbox" name="libelle[]" value="Pause"> Pause
-                <input type="checkbox" name="libelle[]" value="Départ"> Départ
+                <label class="mt-2"><strong>Actions :</strong></label><br>
+                <input class="mt-2" type="checkbox" name="libelle[]" value="Arrivée"> Arrivée
+                <input class="mt-2" type="checkbox" name="libelle[]" value="Pause"> Pause
+                <input class="mt-2" type="checkbox" name="libelle[]" value="Départ"> Départ
             </div>
 
             <div class="mb-3">

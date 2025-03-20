@@ -1,92 +1,159 @@
 <?php
+session_start();
 require "connexion.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nom = $_POST['nom'];
-    $prenom = $_POST['prenom'];
-    $email = $_POST['email'];
-    $telephone = $_POST['telephone'];
-    $mot_de_passe = password_hash($_POST['mot_de_passe'], PASSWORD_BCRYPT);
+    $nom = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $adresse = trim($_POST['adresse']);
+    $email = trim($_POST['email']);
+    $telephone = trim($_POST['telephone']);
+    $poste = trim($_POST['poste']);
+    $mot_de_passe = password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT);
 
-    $sql = "SELECT * FROM employer WHERE email = :email";
+    $check = $connexion->prepare("SELECT id FROM employer WHERE email = :email");
+    $check->execute([':email' => $email]);
+    if ($check->rowCount() > 0) {
+        $_SESSION['error'] = "Cet email est déjà utilisé. Veuillez en choisir un autre.";
+        header("Location: inscription.php");
+        exit();
+    }
+
+    $sql = "INSERT INTO employer (nom, prenom, adresse, email, telephone, poste, mot_de_passe) 
+            VALUES (:nom, :prenom, :adresse, :email, :telephone, :poste, :mot_de_passe)";
     $stmt = $connexion->prepare($sql);
-    $stmt->bindParam(':email', $email);
-    $stmt->execute();
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($user) {
-        $error = "Cet email est déjà utilisé.";
-    } else {
-        $sql = "INSERT INTO employer (nom, prenom, email, telephone, mot_de_passe) VALUES (:nom, :prenom, :email, :telephone, :mot_de_passe)";
-        $stmt = $connexion->prepare($sql);
-        $stmt->execute([
-            ':nom' => $nom,
-            ':prenom' => $prenom,
-            ':email' => $email,
-            ':telephone' => $telephone,
-            ':mot_de_passe' => $mot_de_passe
-        ]);
+    if ($stmt->execute([
+        ':nom' => $nom,
+        ':prenom' => $prenom,
+        ':adresse' => $adresse,
+        ':email' => $email,
+        ':telephone' => $telephone,
+        ':poste' => $poste,
+        ':mot_de_passe' => $mot_de_passe
+    ])) {
         header("Location: login.php?inscription=success");
         exit();
+    } else {
+        $_SESSION['error'] = "Une erreur est survenue lors de l'inscription.";
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container mt-5">
-        <h2>Inscription</h2>
 
-        <?php if (isset($_GET['inscription']) && $_GET['inscription'] == 'success'): ?>
-            <div class="alert alert-success" role="alert">
-                Inscription réussie ! Vous pouvez maintenant vous connecter.
-            </div>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']); ?></div>
+            <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
 
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger" role="alert">
-                <?= $error; ?>
-            </div>
-        <?php endif; ?>
+        <h2 class="text-center">Créer un compte</h2>
 
-        <form method="POST">
-            <div class="mb-3">
-                <label for="nom" class="form-label">Nom</label>
-                <input type="text" name="nom" id="nom" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="prenom" class="form-label">Prénom</label>
-                <input type="text" name="prenom" id="prenom" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" name="email" id="email" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="telephone" class="form-label">Téléphone</label>
-                <input type="tel" name="telephone" id="telephone" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="mot_de_passe" class="form-label">Mot de passe</label>
-                <input type="password" name="mot_de_passe" id="mot_de_passe" class="form-control" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">S'inscrire</button>
-            <a href="login.php" class="btn btn-secondary">Retour à la connexion</a>
-        </form>
+        <div class="container border mt-4 py-3 w-75 bg-body-tertiary">
+<form method="post" class="row g-3 needs-validation" novalidate>
+  <div class="col-md-4">
+    <label for="validationCustom01" class="form-label">Nom</label>
+    <input type="text" name="nom" class="form-control" id="validationCustom01" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  <div class="col-md-4">
+    <label for="validationCustom02" class="form-label">Prénom</label>
+    <input type="text" name="prenom" class="form-control" id="validationCustom02" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  <div class="col-md-4">
+    <label for="validationCustom02" class="form-label">Adresse</label>
+    <input type="text" name="adresse" class="form-control" id="validationCustom02" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  <div class="col-md-4">
+    <label for="validationCustom02" class="form-label">Email</label>
+    <input type="email" name="email" class="form-control" id="validationCustom02" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  <div class="col-md-4">
+    <label for="validationCustom02" class="form-label">Téléphone</label>
+    <input type="text" name="telephone" class="form-control" id="validationCustom02" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  <div class="col-md-4">
+    <label for="validationCustom02" class="form-label">Poste</label>
+    <input type="text" name="poste" class="form-control" id="validationCustom02" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <label for="validationCustom03" class="form-label">Mot de passe</label>
+    <input type="password" name="mot_de_passe" class="form-control" id="validationCustom03" required>
+    <div class="invalid-feedback">
+      Please provide a valid city.
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+      <label class="form-check-label" for="invalidCheck">
+        Agree to terms and conditions
+      </label>
+      <div class="invalid-feedback">
+        You must agree before submitting.
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+  <button type="submit" class="btn btn-primary">S'inscrire</button>
+  <a href="login.php" class="btn btn-secondary">Se connecter</a>
+  </div>
+</form>
+</div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+(() => {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  const forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+    </script>
 </body>
+
 </html>
+
+<?php session_write_close(); ?>
+

@@ -41,9 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Modifier un Pointage</h2>
 
-        <form method="POST">
+        <form method="POST" class="form-control py-4 mx-auto bg-body-tertiary" style="width: 450px;">
+        <h2 class="text-center">Modifier un Pointage</h2>
             <div class="mb-3">
                 <label><strong>Actions :</strong></label><br>
                 <input type="checkbox" name="libelle[]" value="Arrivée" <?= in_array('Arrivée', explode(',', $pointage['libellé'])) ? 'checked' : ''; ?>> Arrivée

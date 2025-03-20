@@ -1,5 +1,6 @@
 <?php
 require "connexion.php";
+include "navbar.php";
 
 $sql = "SELECT * FROM pointages";
 $query = $connexion->query($sql);
@@ -11,9 +12,7 @@ $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Pointage</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Document</title>
     <style>
         body {
             display: flex;
@@ -84,15 +83,15 @@ $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="sidebar">
             <h4 class="text-center">Menu</h4>
-            <a href="#">🏠 Dashboard</a>
-            <a href="#">➕ Ajouter un pointage</a>
-            <a href="#">📋 Liste des pointages</a>
-            <a href="logout.php" class="mt-auto">🚪 Déconnexion</a>
+            <a href="#"><span><i class="bi bi-house me-2"></i></span> Dashboard</a>
+            <a href="#"><span><i class="bi bi-plus-square me-2"></i></span> Ajouter un pointage</a>
+            <a href="#"><span><i class="bi bi-card-list me-2"></i></span> Liste des pointages</a>
+            <a href="logout.php" class="mt-auto"><span><i class="bi bi-door-closed me-2"></i></span> Déconnexion</a>
         </div>
 
         <div class="container c-middle mt-5">
             <h2 class="mb-4">Mes Pointages</h2>
-            <a href="ajouter.php" class="btn btn-success mb-3">➕ Ajouter un Pointage</a>
+            <a href="ajouter.php" class="btn btn-success mb-3"><span><i class="bi bi-plus-lg"></i></span> Ajouter un Pointage</a>
 
             <?php foreach ($pointages as $pointage): ?>
                 <div class="card mb-3">

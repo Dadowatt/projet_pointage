@@ -1,7 +1,6 @@
 <?php
 session_start();
 require "connexion.php";
-include "navbar.php";
 
 $erreur = "";
 
@@ -38,26 +37,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
 
 <div class="container mt-5">
     <h2 class="text-center">Connexion</h2>
 
     <?php if (!empty($erreur)): ?>
-        <div class="alert alert-danger"><?= $erreur ?></div>
+        <div class="alert alert-danger"><?= htmlspecialchars($erreur); ?></div>
     <?php endif; ?>
 
-    <?php if (isset($_GET['inscription']) && $_GET['inscription'] == 'success'): ?>
-            <div class="alert alert-success" role="alert">
-                Inscription réussie ! Vous pouvez maintenant vous connecter.
-            </div>
-        <?php endif; ?>
+    <?php if (empty($erreur) && isset($_GET['inscription']) && $_GET['inscription'] == 'success'): ?>
+    <div class="alert alert-success" role="alert">
+        Inscription réussie ! Vous pouvez maintenant vous connecter.
+    </div>
+<?php endif; ?>
 
     <form action="" method="POST" class="bg-body-tertiary p-4 needs-validation mt-3 form-control mx-auto" novalidate style="width: 500px;">
         <div class="mb-3">
@@ -97,4 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </script>
 
 </body>
+
 </html>
+
+<?php session_write_close(); ?>
