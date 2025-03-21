@@ -21,9 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $sql = "INSERT INTO employer (nom, prenom, adresse, email, telephone, poste, mot_de_passe) 
             VALUES (:nom, :prenom, :adresse, :email, :telephone, :poste, :mot_de_passe)";
-    $stmt = $connexion->prepare($sql);
+    $query = $connexion->prepare($sql);
 
-    if ($stmt->execute([
+    if ($query->execute([
         ':nom' => $nom,
         ':prenom' => $prenom,
         ':adresse' => $adresse,

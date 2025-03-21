@@ -20,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $sql = "INSERT INTO pointages (libellé, date, nbr_présence, employer_id) 
                     VALUES (:libelle, :date, :nbr_presence, :employer_id)";
-            $stmt = $connexion->prepare($sql);
-            $stmt->execute([
+            $query = $connexion->prepare($sql);
+            $query->execute([
                 ':libelle' => $libelle,
                 ':date' => $date,
                 ':nbr_presence' => $nbr_presence,

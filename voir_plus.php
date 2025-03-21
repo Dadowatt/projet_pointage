@@ -8,10 +8,10 @@ if (isset($_GET['id'])) {
             FROM pointages p
             JOIN employer e ON p.employer_id = e.id
             WHERE p.id = :id";
-    $stmt = $connexion->prepare($sql);
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-    $stmt->execute();
-    $pointage = $stmt->fetch(PDO::FETCH_ASSOC);
+    $query = $connexion->prepare($sql);
+    $query->bindParam(':id', $id, PDO::PARAM_INT);
+    $query->execute();
+    $pointage = $query->fetch(PDO::FETCH_ASSOC);
 
     if (!$pointage) {
         die("Pointage introuvable.");

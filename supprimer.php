@@ -3,10 +3,10 @@ require "connexion.php";
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     $sql = "DELETE FROM pointages WHERE id = :id";
-    $stmt = $connexion->prepare($sql);
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $query = $connexion->prepare($sql);
+    $query->bindParam(':id', $id, PDO::PARAM_INT);
 
-    if ($stmt->execute()) {
+    if ($query->execute()) {
         header("Location: index.php");
         exit();
     } else {

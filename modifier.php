@@ -5,10 +5,10 @@ include "navbar.php";
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     $sql = "SELECT * FROM pointages WHERE id = :id";
-    $stmt = $connexion->prepare($sql);
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-    $stmt->execute();
-    $pointage = $stmt->fetch(PDO::FETCH_ASSOC);
+    $query = $connexion->prepare($sql);
+    $query->bindParam(':id', $id, PDO::PARAM_INT);
+    $query->execute();
+    $pointage = $query->fetch(PDO::FETCH_ASSOC);
 
     if (!$pointage) {
         die("Pointage non trouvé.");
@@ -22,8 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nbr_presence = intval($_POST['nbr_presence']);
 
     $sql = "UPDATE pointages SET libellé = :libelle, nbr_présence = :nbr_presence WHERE id = :id";
-    $stmt = $connexion->prepare($sql);
-    $stmt->execute([
+    $query = $connexion->prepare($sql);
+    $query->execute([
         ':libelle' => $libelle,
         ':nbr_presence' => $nbr_presence,
         ':id' => $id
