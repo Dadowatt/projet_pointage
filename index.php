@@ -17,7 +17,7 @@ $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
         body {
             display: flex;
             height: 100vh;
-            overflow: hidden;
+            overflow: auto;
             flex-direction: column;
         }
 
@@ -109,8 +109,6 @@ $pointages = $query->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

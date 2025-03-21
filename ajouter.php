@@ -1,6 +1,7 @@
 <?php
 require "connexion.php";
 include "navbar.php";
+session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!isset($_POST['libelle']) || empty($_POST['libelle'])) {
@@ -13,26 +14,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($nbr_presence <= 0) {
             $error = "Le nombre de présences doit être un nombre positif.";
         } else {
-            $sql = "INSERT INTO pointages (libellé, date, nbr_présence) VALUES (:libelle, :date, :nbr_presence)";
+            if (!isset($_SESSION['employe_id'])) {
+                die("Erreur : employé non identifié !");
+            }
+
+            $sql = "INSERT INTO pointages (libellé, date, nbr_présence, employer_id) 
+                    VALUES (:libelle, :date, :nbr_presence, :employer_id)";
             $stmt = $connexion->prepare($sql);
             $stmt->execute([
                 ':libelle' => $libelle,
                 ':date' => $date,
-                ':nbr_presence' => $nbr_presence
+                ':nbr_presence' => $nbr_presence,
+                ':employer_id' => $_SESSION['employe_id']
             ]);
+
             header("Location: index.php");
             exit();
         }
     }
 }
+
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>Ajouter un Pointage</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container mt-5">
 
@@ -43,7 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php endif; ?>
 
         <form method="POST" class="form-control mx-auto py-4 bg-body-tertiary" style="width: 450px;">
-        <h2 class="text-center">Ajouter un Pointage</h2>
+            <h2 class="text-center">Ajouter un Pointage</h2>
+
             <div class="mb-3">
                 <label class="mt-2"><strong>Actions :</strong></label><br>
                 <input class="mt-2" type="checkbox" name="libelle[]" value="Arrivée"> Arrivée
@@ -61,4 +74,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 </body>
+
 </html>

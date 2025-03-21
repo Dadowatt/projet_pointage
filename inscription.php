@@ -57,10 +57,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
 
-        <h2 class="text-center">Créer un compte</h2>
+        <h2 class="text-center text-primary">Créer un compte</h2>
 
         <div class="container border mt-4 py-3 w-75 bg-body-tertiary">
-<form method="post" class="row g-3 needs-validation" novalidate>
+<form method="post" class="row g-3 needs-validation text-primary-emphasis" novalidate>
   <div class="col-md-4">
     <label for="validationCustom01" class="form-label">Nom</label>
     <input type="text" name="nom" class="form-control" id="validationCustom01" required>

@@ -14,7 +14,7 @@ if (isset($_GET['id'])) {
         die("Pointage non trouvé.");
     }
 } else {
-    die("ID du pointage manquant.");
+    die("<h3> ID du pointage manquant. </h3>");
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

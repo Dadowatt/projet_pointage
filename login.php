@@ -1,5 +1,10 @@
 <?php
 session_start();
+if (isset($_SESSION['employe_id'])) {
+    echo "ID de l'employé connecté : " . $_SESSION['employe_id'];
+} else {
+    echo "Aucun employé connecté.";
+}
 require "connexion.php";
 
 $erreur = "";
@@ -48,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
 <div class="container mt-5">
-    <h2 class="text-center">Connexion</h2>
+    <h2 class="text-center text-primary">Connexion</h2>
 
     <?php if (!empty($erreur)): ?>
         <div class="alert alert-danger"><?= htmlspecialchars($erreur); ?></div>
